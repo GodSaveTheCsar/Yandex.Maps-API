@@ -24,7 +24,7 @@ def up():
     if  float(dell[slave[count]]) + float(lat) < 85:
         lat = float(dell[slave[count]]) + float(lat)
     else:
-        print('придел')
+        print('предел')
 
 
 def down():
@@ -35,7 +35,7 @@ def down():
     if float(lat) - float(dell[slave[count]]) > -85:
         lat = float(lat) - float(dell[slave[count]])
     else:
-        print('придел')
+        print('предел')
 
 
 def right():
@@ -46,7 +46,7 @@ def right():
     if float(dell2[slave[count]]) + float(lon) < 200:
         lon = float(dell2[slave[count]]) + float(lon)
     else:
-        print('придел')
+        print('предел')
 
 
 def left():
@@ -56,7 +56,7 @@ def left():
     if float(lon) - float(dell2[slave[count]]) > -200:
         lon = float(lon) - float(dell2[slave[count]])
     else:
-        print('придел')
+        print('предел')
 
 
 def Hot_key():
@@ -69,7 +69,7 @@ def Hot_key():
         count += 1
         delta = slave[count]
     else:
-        print('придел')
+        print('предел')
 
 
 
@@ -82,7 +82,7 @@ def Hot_key2():
         count -= 1
         delta = slave[count]
     else:
-        print('придел')
+        print('предел')
 
 
 keyboard.add_hotkey('PAGEUP', Hot_key)

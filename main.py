@@ -26,6 +26,7 @@ running = True
 lon = "37.530887"
 lat = "55.703118"
 l = 'map'
+pts = list()
 
 
 def up():
@@ -271,6 +272,7 @@ class TextInput:
         self.cursor_position = 0
 
 
+
 class Button:
     def __init__(self, width, height, text):
         self.width = width
@@ -314,6 +316,7 @@ class Button:
                         toponym_address = toponym['Point']['pos']
                         lon = toponym_address.split()[0]
                         lat = toponym_address.split()[1]
+                        pts.append(','.join(toponym_address.split()) + ',flag')
                     except Exception:
                         print('Упс...')
 
@@ -341,7 +344,8 @@ if __name__ == '__main__':
         params = {
             "ll": ",".join([str(lon), str(lat)]),
             "spn": ",".join([str(delta), str(delta)]),
-            "l": l
+            "l": l,
+            "pt": '`'.join(pts)
         }
         response = requests.get(api_server, params=params)
         if not response:

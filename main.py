@@ -29,6 +29,11 @@ l = 'map'
 pts = list()
 
 
+def pts_c():
+    global pts
+    pts.clear()
+
+
 def up():
     global dell
     global lat
@@ -321,6 +326,29 @@ class Button:
                         print('Упс...')
 
 
+class Button2:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.inactive_color = (41, 150, 150)
+        self.active_color = (9, 190, 150)
+
+    def draw(self, x, y, text, action=None):
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if x < mouse[0] < x + self.width:
+            if y < mouse[1] < y + self.height:
+                pygame.draw.rect(display, self.inactive_color, (x, y, self.width, self.height))
+                if click[0] == 1:
+                    if action != None:
+                        action()
+            else:
+                pygame.draw.rect(display, self.active_color, (x, y, self.width, self.height))
+
+        else:
+            pygame.draw.rect(display, self.active_color, (x, y, self.width, self.height))
+        print_text(text, x + 2, y + 20)
+
 
 class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
@@ -334,6 +362,7 @@ if __name__ == '__main__':
     sat = Button(WIDTH//10, HEIGHT//10, 'спутник')
     skl = Button(WIDTH//10, HEIGHT//10, 'гибрид')
     map = Button(WIDTH//10, HEIGHT//10, 'схема')
+    button = Button2(WIDTH//10, HEIGHT//10)
     search = Button(WIDTH//10, HEIGHT//10, 'Искать')
     textinput = TextInput()
     display.fill((255, 255, 255))
@@ -345,7 +374,7 @@ if __name__ == '__main__':
             "ll": ",".join([str(lon), str(lat)]),
             "spn": ",".join([str(delta), str(delta)]),
             "l": l,
-            "pt": '`'.join(pts)
+            "pt": '~'.join(pts)
         }
         response = requests.get(api_server, params=params)
         if not response:
@@ -380,6 +409,7 @@ if __name__ == '__main__':
         sat.draw(WIDTH - sat.width, 0)
         skl.draw(WIDTH - sat.width - skl.width, 0)
         map.draw(WIDTH - sat.width - 2*map.width, 0)
+        button.draw(260, 0, 'очистить', pts_c)
         search.draw(200, 0)
         display.blit(textinput.get_surface(), (10, 10))
         pygame.display.update()

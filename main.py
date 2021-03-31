@@ -5,9 +5,12 @@ import keyboard
 import requests
 import pygame
 import pygame.locals as pl
+global f, ff
+
 
 pygame.init()
-
+f = ''
+ff = ''
 count = 0
 dell = {'0.002': '0.0029', '0.007': '0.0125', '0.012': '0.0220', '0.022': '0.0690', '0.047': '0.09', '0.092': '0.17',
         '0.202': '0.34', '0.702': '1.34',
@@ -21,17 +24,53 @@ display = pygame.display.set_mode((WIDTH, HEIGHT))
 COLOR_INACTIVE = pygame.Color('lightskyblue3')
 COLOR_ACTIVE = pygame.Color('dodgerblue2')
 FONT = pygame.font.Font(None, 20)
+flag = True
 delta = "0.002"
 running = True
 lon = "37.530887"
 lat = "55.703118"
 l = 'map'
 pts = list()
+adress = '666666'
+ada = '66666'
+
+
+def aladr():
+    global pts
+    global adress
+    global ada
+    global f, ff
+
+
+    if pts != []:
+        if flag is True:
+            f = 'адресс: {}'.format(adress)
+            ff = 'индекс: {}'.format(ada)
+            print('адресс: {}, почтовый индекс: {}'.format(adress, ada))
+        elif flag is False:
+            f = 'адресс: {}'.format(adress)
+            print('адресс: {}'.format(adress, ada))
+    else:
+        f = ''
+        ff = ''
+
+
+
+def switcher():
+    global flag
+    if flag is True:
+        flag = False
+        print('индекс: off')
+    else:
+        flag = True
+        print('индекс: on')
 
 
 def pts_c():
-    global pts
+    global pts, f, ff
     pts.clear()
+    f = ''
+    ff = ''
 
 
 def up():
@@ -304,7 +343,7 @@ class Button:
         print_text(self.text, x, y + self.height//2)
 
     def check(self, pos):
-        global l, lon, lat
+        global l, lon, lat, flag, adress, ada, ff
         if self.x <= pos[0] <= self.x + self.width:
             if self.y <= pos[1] <= self.y + self.height:
                 if self.text == 'схема':
@@ -322,8 +361,26 @@ class Button:
                         lon = toponym_address.split()[0]
                         lat = toponym_address.split()[1]
                         pts.append(','.join(toponym_address.split()) + ',flag')
+                        toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+                        # Полный адрес топонима:
+                        toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
+                        # Координаты центра топонима:
+                        toponym_coodrinates = toponym["Point"]["pos"]
+                        # Печатаем извлечённые из ответа поля:
+                        adress = (toponym_address, toponym_coodrinates)
+                        if flag is True:
+                            json_response = response.json()
+                            toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+                            toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["Address"]
+                            # Печатаем извлечённые из ответа поля:
+                            try:
+                                ada = (toponym_address["postal_code"])
+                            except Exception:
+                                print('нет почтового кода')
+                                ada = 'нет почтового кода'
                     except Exception:
                         print('Упс...')
+                    aladr()
 
 
 class Button2:
@@ -350,6 +407,10 @@ class Button2:
         print_text(text, x + 2, y + 20)
 
 
+
+
+
+
 class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)
@@ -363,6 +424,7 @@ if __name__ == '__main__':
     skl = Button(WIDTH//10, HEIGHT//10, 'гибрид')
     map = Button(WIDTH//10, HEIGHT//10, 'схема')
     button = Button2(WIDTH//10, HEIGHT//10)
+    button2 = Button2(WIDTH//4.5, HEIGHT//10)
     search = Button(WIDTH//10, HEIGHT//10, 'Искать')
     textinput = TextInput()
     display.fill((255, 255, 255))
@@ -411,7 +473,9 @@ if __name__ == '__main__':
         map.draw(WIDTH - sat.width - 2*map.width, 0)
         button.draw(260, 0, 'очистить', pts_c)
         search.draw(200, 0)
+        button2.draw(0, 70, 'почтовый индекс', switcher)
         display.blit(textinput.get_surface(), (10, 10))
+        print_text(f, 0, 430)
+        print_text(ff, 0, 400)
         pygame.display.update()
         clock.tick(120)
-
